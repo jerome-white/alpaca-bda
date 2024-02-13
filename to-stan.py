@@ -13,10 +13,12 @@ def to_list(df):
         yield (i, values)
 
 if __name__ == '__main__':
-    df = pd.read_csv(sys.stdin)
+    df = (pd
+          .read_csv(sys.stdin)
+          .sort_values(by=['generator_1', 'generator_2']))
     data = {
         'N': len(df),
-        'K': len(models(df)),
+        'K': sum(1 for _ in models(df)),
     }
     data.update(to_list(df))
 
