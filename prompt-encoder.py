@@ -46,7 +46,7 @@ class PromptEncoder:
 
 if __name__ == '__main__':
     arguments = ArgumentParser()
-    arguments.add_argument('--dump', type=Path)
+    arguments.add_argument('--record', type=Path)
     args = arguments.parse_args()
 
     prompts = PromptEncoder([
@@ -68,5 +68,5 @@ if __name__ == '__main__':
 
         writer.writerow(asdict(comparison))
 
-    if args.dump is not None:
-        prompts.dump(args.dump)
+    if args.record is not None:
+        prompts.dump(args.record)
