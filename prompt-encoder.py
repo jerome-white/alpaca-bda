@@ -3,9 +3,9 @@ import csv
 import json
 import uuid
 import collections as cl
-from dataclasses import dataclass, asdict, fields, replace
 from pathlib import Path
 from argparse import ArgumentParser
+from dataclasses import dataclass, asdict, fields, replace
 
 @dataclass
 class ModelComparison:
