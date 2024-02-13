@@ -7,8 +7,8 @@ from argparse import ArgumentParser
 class ModelNamer:
     _model = 'generator_'
     _fieldnames = (
-        'mid',
-        'model',
+        'model_id',
+        'name',
     )
     
     def __init__(self, start=1):
