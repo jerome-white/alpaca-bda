@@ -3,6 +3,8 @@ import json
 
 import pandas as pd
 
+from utils import models
+
 def to_list(df):
     for i in df.columns:
         values = (df[i]
@@ -12,16 +14,9 @@ def to_list(df):
 
 if __name__ == '__main__':
     df = pd.read_csv(sys.stdin)
-
-    items = list(map('model_{}'.format, range(1, 3)))
-    models = (df
-              .filter(items=items)
-              .unstack()
-              .unique())
-
     data = {
         'N': len(df),
-        'K': len(models),
+        'K': len(models(df)),
     }
     data.update(to_list(df))
 
