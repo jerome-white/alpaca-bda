@@ -8,7 +8,7 @@ import pandas as pd
 
 from utils import Logger
 
-GroupKey = cl.namedtuple('GroupKey', 'model_1, model_2')
+GroupKey = cl.namedtuple('GroupKey', 'generator_1, generator_2')
 Result = cl.namedtuple('Result',
                        GroupKey._fields + ('win_1', 'win_2'),
                        defaults=[0, 0])
