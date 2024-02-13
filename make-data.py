@@ -6,7 +6,7 @@ from multiprocessing import Pool, Queue
 
 import pandas as pd
 
-from utils import Logger
+from utils import Logger, models
 
 GroupKey = cl.namedtuple('GroupKey', 'generator_1, generator_2')
 Result = cl.namedtuple('Result',
@@ -14,19 +14,15 @@ Result = cl.namedtuple('Result',
                        defaults=[0, 0])
 
 class ModelGrouper:
-    _col = 'generator'
-    
     def __init__(self, df):
-        items = [ f'{self._col}_{i}' for i in range(1, 3) ]
-        self.models = df.filter(items=items)
+        self.pairs = df.filter(items=GroupKey._fields)
+        self.order = dict(map(reversed, enumerate(sorted(models(df)))))
 
     def __call__(self, idx):
-        models = (self
-                  .models
-                  .iloc[idx]
-                  .to_numpy())
-        
-        return tuple(sorted(models))
+        (g1, g2) = self.pairs.iloc[idx]
+        (o1, o2) = map(self.order.get, (g1, g2))
+
+        return (g1, g2) if o1 < o2 else (g2, g1)
 
 def func(args):
     (group, df) = args
