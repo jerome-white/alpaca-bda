@@ -5,7 +5,7 @@ from pathlib import Path
 from argparse import ArgumentParser
 
 class ModelNamer:
-    _model = 'model_'
+    _model = 'generator_'
     _fieldnames = (
         'mid',
         'model',
