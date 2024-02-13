@@ -1,11 +1,12 @@
 import sys
 import csv
 import json
-import logging
 from pathlib import Path
 from argparse import ArgumentParser
 from dataclasses import dataclass, asdict, fields
 from multiprocessing import Pool, Queue
+
+from utils import Logger
 
 @dataclass
 class ModelComparison:
@@ -30,7 +31,7 @@ def func(incoming, outgoing):
 
     while True:
         path = incoming.get()
-        logging.info(path)
+        Logger.info(path)
 
         with path.open() as fp:
             data = json.load(fp)
@@ -40,7 +41,7 @@ def func(incoming, outgoing):
             try:
                 kwargs = {x: i[x] for x in keys}
             except KeyError as err:
-                logging.error(f'{path}: {err}')
+                Logger.error(f'{path}: {err}')
                 continue
             comparison = ModelComparison(**kwargs)
             results.append(asdict(comparison))
