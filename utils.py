@@ -11,7 +11,7 @@ logging.captureWarnings(True)
 Logger = logging.getLogger(__name__)
 
 def models(df):
-    items = list(map('model_{}'.format, range(1, 3)))
+    items = list(map('generator_{}'.format, range(1, 3)))
     yield from (df
                 .filter(items=items)
                 .unstack()
