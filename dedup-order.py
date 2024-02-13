@@ -1,7 +1,8 @@
 import sys
 import csv
-import logging
 import collections as cl
+
+from utils import Logger
 
 Judgement = cl.namedtuple('Judgement', [
     'annotator',
@@ -21,7 +22,7 @@ if __name__ == '__main__':
         params = map(row.get, Judgement._fields)
         judgement = Judgement(*params)
         if judgement in seen:
-            logging.error(judgement)
+            Logger.error(judgement)
             continue
         writer.writerow(row)
         seen.add(judgement)
