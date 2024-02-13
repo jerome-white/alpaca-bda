@@ -31,7 +31,7 @@ def func(args):
     gdict = group._asdict()
     result = Result(**gdict)
     indices = { y: x[-1] for (x, y) in gdict.items() }
-    
+
     for (i, g) in df.groupby('preference', sort=False):
         kwargs = {
             f'win_{indices[i]}': len(g),
@@ -41,7 +41,7 @@ def func(args):
     return result
 
 def each(fp):
-    df = pd.read_csv(sys.stdin)
+    df = pd.read_csv(fp)
     grouper = ModelGrouper(df)
 
     for (i, g) in df.groupby(grouper, sort=False):
@@ -55,6 +55,6 @@ if __name__ == '__main__':
 
     with Pool(args.workers) as pool:
         writer = csv.DictWriter(sys.stdout, fieldnames=Result._fields)
-        writer.writeheader()        
+        writer.writeheader()
         for i in pool.imap_unordered(func, each(sys.stdin)):
             writer.writerow(i._asdict())
