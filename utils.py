@@ -9,10 +9,3 @@ logging.basicConfig(
 logging.captureWarnings(True)
 # logging.getLogger('matplotlib').setLevel(logging.CRITICAL)
 Logger = logging.getLogger(__name__)
-
-def models(df):
-    items = list(map('generator_{}'.format, range(1, 3)))
-    yield from (df
-                .filter(items=items)
-                .unstack()
-                .unique())

@@ -6,7 +6,7 @@ from multiprocessing import Pool
 
 import pandas as pd
 
-from utils import Logger, models
+from utils import Logger
 
 @dataclass
 class GroupKey:
@@ -32,6 +32,13 @@ class ModelGrouper:
 
 def attrs(dclass):
     yield from (x.name for x in fields(dclass))
+
+def models(df):
+    items = list(map('generator_{}'.format, range(1, 3)))
+    yield from (df
+                .filter(items=items)
+                .unstack()
+                .unique())
 
 def tally(df, indices):
     for (i, g) in df.groupby('preference', sort=False, dropna=False):
