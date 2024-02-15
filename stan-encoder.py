@@ -49,19 +49,26 @@ class ModelNamer:
 def records(fp, namer):
     reader = csv.DictReader(fp)
     for row in reader:
-	row.update(namer(row))
+        row.update(namer(row))
         yield row
+
+def g2p(df):
+    columns = { f'generator_{x}': f'player_{x}' for x in range(1, 3) }
+    return df.rename(columns=columns)
+
+def to_lists(df):
+    for i in df.columns:
+        values = (df[i]
+                  .astype(int)
+                  .to_numpy()
+                  .tolist())
+
+        yield (i, values)
 
 if __name__ == '__main__':
     arguments = ArgumentParser()
     arguments.add_argument('--record', type=Path)
     args = arguments.parse_args()
-
-    outcomes = (
-        'win_1',
-        'win_2',
-        'ties',
-    )
 
     with ModelNamer(output=args.record) as namer:
         df = pd.DataFrame.from_records(records(sys.stdin, namer))
@@ -70,6 +77,6 @@ if __name__ == '__main__':
             'N': len(df),
             'K': len(namer),
         }
-        for i in outcomes:
-            data[i] = df[i].to_numpy().tolist()
+        data.update(to_lists(g2p(df)))
+
         json.dump(data, sys.stdout, indent=2)
