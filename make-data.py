@@ -1,21 +1,28 @@
 import sys
 import csv
-import collections as cl
 from argparse import ArgumentParser
-from multiprocessing import Pool, Queue
+from dataclasses import dataclass, asdict, fields
+from multiprocessing import Pool
 
 import pandas as pd
 
 from utils import Logger, models
 
-GroupKey = cl.namedtuple('GroupKey', 'generator_1, generator_2')
-Result = cl.namedtuple('Result',
-                       GroupKey._fields + ('win_1', 'win_2'),
-                       defaults=[0, 0])
+@dataclass
+class GroupKey:
+    generator_1: str
+    generator_2: str
+
+@dataclass
+class Result(GroupKey):
+    win_1: int = 0
+    win_2: int = 0
+    ties:  int = 0
 
 class ModelGrouper:
     def __init__(self, df):
-        self.pairs = df.filter(items=GroupKey._fields)
+        items = [ x.name for x in fields(GroupKey) ]
+        self.pairs = df.filter(items=items)
         self.order = dict(map(reversed, enumerate(sorted(models(df)))))
 
     def __call__(self, idx):
@@ -24,21 +31,19 @@ class ModelGrouper:
 
         return (g1, g2) if o1 < o2 else (g2, g1)
 
+def tally(df, indices):
+    for (i, g) in df.groupby('preference', sort=False):
+        key = 'ties' if pd.isnull(i) else f'win_{indices[i]}'
+        yield (key, len(g))
+
 def func(args):
     (group, df) = args
-    Logger.info(' '.join(group))
+    Logger.info(' '.join(group.values()))
 
-    gdict = group._asdict()
-    result = Result(**gdict)
-    indices = { y: x[-1] for (x, y) in gdict.items() }
+    indices = { y: x[-1] for (x, y) in group.items() }
+    wins = dict(df, indices)
 
-    for (i, g) in df.groupby('preference', sort=False):
-        kwargs = {
-            f'win_{indices[i]}': len(g),
-        }
-        result = result._replace(**kwargs)
-
-    return result
+    return Result(**group, **wins)
 
 def each(fp):
     df = pd.read_csv(fp)
@@ -46,7 +51,7 @@ def each(fp):
 
     for (i, g) in df.groupby(grouper, sort=False):
         key = GroupKey(*i)
-        yield (key, g)
+        yield (asdict(key), g)
 
 if __name__ == '__main__':
     arguments = ArgumentParser()
