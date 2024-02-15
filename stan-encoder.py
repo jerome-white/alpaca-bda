@@ -15,7 +15,7 @@ class ModelNamer:
     
     def __init__(self, output=None):
         self.output = output
-        self.index = 0
+        self.index = 1
         self.models = {}
 
     def __enter__(self):
