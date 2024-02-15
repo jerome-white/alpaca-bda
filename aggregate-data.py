@@ -34,7 +34,7 @@ def attrs(dclass):
     yield from (x.name for x in fields(dclass))
 
 def tally(df, indices):
-    for (i, g) in df.groupby('preference', sort=False):
+    for (i, g) in df.groupby('preference', sort=False, dropna=False):
         key = 'ties' if pd.isnull(i) else f'win_{indices[i]}'
         yield (key, len(g))
 
