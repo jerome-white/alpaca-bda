@@ -41,7 +41,7 @@ def func(incoming, outgoing):
             try:
                 kwargs = {x: i[x] for x in keys}
             except KeyError as err:
-                Logger.error(f'{path}: {err}')
+                Logger.warning(f'{path}: {err}')
                 continue
             comparison = ModelComparison(**kwargs)
             results.append(asdict(comparison))
