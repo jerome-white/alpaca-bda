@@ -21,8 +21,7 @@ class Result(GroupKey):
 
 class ModelGrouper:
     def __init__(self, df):
-        items = [ x.name for x in fields(GroupKey) ]
-        self.pairs = df.filter(items=items)
+        self.pairs = df.filter(items=list(attrs(GroupKey)))
         self.order = dict(map(reversed, enumerate(sorted(models(df)))))
 
     def __call__(self, idx):
@@ -30,6 +29,9 @@ class ModelGrouper:
         (o1, o2) = map(self.order.get, (g1, g2))
 
         return (g1, g2) if o1 < o2 else (g2, g1)
+
+def attrs(dclass):
+    yield from (x.name for x in fields(dclass))
 
 def tally(df, indices):
     for (i, g) in df.groupby('preference', sort=False):
@@ -59,7 +61,8 @@ if __name__ == '__main__':
     args = arguments.parse_args()
 
     with Pool(args.workers) as pool:
-        writer = csv.DictWriter(sys.stdout, fieldnames=Result._fields)
+        fieldnames = list(attrs(Result))
+        writer = csv.DictWriter(sys.stdout, fieldnames=fieldnames)
         writer.writeheader()
         for i in pool.imap_unordered(func, each(sys.stdin)):
-            writer.writerow(i._asdict())
+            writer.writerow(asdict(i))
