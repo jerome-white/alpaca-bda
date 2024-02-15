@@ -43,7 +43,7 @@ def func(args):
     Logger.info(' '.join(group.values()))
 
     indices = { y: x[-1] for (x, y) in group.items() }
-    wins = dict(df, indices)
+    wins = dict(tally(df, indices))
 
     return Result(**group, **wins)
 
