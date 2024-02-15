@@ -1,14 +1,19 @@
 #!/bin/bash
 
-export PYTHONPATH=.
+ROOT=`git rev-parse --show-toplevel`
+ALPACA_EVAL=alpaca_eval
+ALPACA_GIT=$ROOT/$ALPACA_EVAL
+
+export PYTHONPATH=$ROOT
 export PYTHONLOGLEVEL=info
 
-ALPACA_ROOT=$HOME/alpaca_eval
+if [ -d $ALPACA_GIT ]; then
+    (cd $ALPACA_GIT && git pull origin main) 1>&2
+else
+    git clone https://github.com/tatsu-lab/${ALPACA_EVAL}.git
+fi
 
-(cd $ALPACA_ROOT && git pull origin main) 1>&2
-python compile-results.py --results $ALPACA_ROOT/results \
+python compile-results.py --results $ALPACA_GIT/results \
     | python prompt-encoder.py --record prompts.json \
-    | python dedup-order.py \
-    | python make-data.py \
-    | python codify-models.py --record models.csv \
-    | python to-stan.py
+    | python aggregate-data.py \
+    | python stan-encoder.py --record models.csv
