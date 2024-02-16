@@ -56,7 +56,7 @@ def g2p(df):
     columns = { f'generator_{x}': f'player_{x}' for x in range(1, 3) }
     return df.rename(columns=columns)
 
-def to_lists(df):
+def extract(df):
     for i in df.columns:
         values = (df[i]
                   .astype(int)
@@ -77,6 +77,6 @@ if __name__ == '__main__':
             'N': len(df),
             'K': len(namer),
         }
-        data.update(to_lists(g2p(df)))
+        data.update(extract(g2p(df)))
 
         json.dump(data, sys.stdout, indent=2)
