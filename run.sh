@@ -1,8 +1,10 @@
 #!/bin/bash
 
 ROOT=`git rev-parse --show-toplevel`
+
 ALPACA_EVAL=alpaca_eval
 ALPACA_GIT=$ROOT/$ALPACA_EVAL
+STAN_MODEL=$ROOT/models/bradley-terry
 
 export PYTHONPATH=$ROOT
 export PYTHONLOGLEVEL=info
@@ -15,5 +17,6 @@ fi
 
 python compile-results.py --results $ALPACA_GIT/results \
     | python prompt-encoder.py --record prompts.json \
-    | python aggregate-data.py \
-    | python stan-encoder.py --record models.csv
+    | python $STAN_MODEL/aggregate-data.py \
+    | python stan-encoder.py --record $STAN_MODEL/models.csv \
+	     > $STAN_MODEL/data.json
