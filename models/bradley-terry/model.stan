@@ -5,8 +5,8 @@
  **/
 
 data {
-  int<lower=0> K; // players
-  int<lower=0> N; // games
+  int<lower=1> K; // players
+  int<lower=1> N; // games
   array[N] int<lower=1, upper=K> player_1; // player 1 for game n
   array[N] int<lower=1, upper=K> player_2; // player 0 for game n
   array[N] int<lower=0, upper=1> y;        // winner for game n
@@ -14,7 +14,7 @@ data {
 
 parameters {
   vector[K] alpha;     // ability for player k
-  real<lower=0> sigma; // scale of ability variation
+  real<lower=0.001> sigma; // scale of ability variation
 }
 
 model {
