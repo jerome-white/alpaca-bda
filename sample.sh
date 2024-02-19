@@ -11,6 +11,7 @@ _workers=`nproc`
 mkdir $_output 2> /dev/null || rm --recursive --force $_output/*
 rm --force $_summary
 
+(cd $CMDSTAN && make $STAN_MODEL/model) || exit 1
 $STAN_MODEL/model \
     sample num_samples=$N num_chains=$_workers \
     data file=$STAN_MODEL/data.json \
