@@ -8,5 +8,4 @@ export PYTHONPATH=$ROOT
 export PYTHONLOGLEVEL=info
 
 python aggregate-output.py --results $STAN_MODEL/output \
-    | python calculate-ability.py --models $ROOT/models.csv \
-    | python plot-ability.py --best 10 --output ability.png
+    | python add-model-names.py --models $ROOT/models.csv --chunk-size 100000
