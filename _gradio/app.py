@@ -164,10 +164,10 @@ with gr.Blocks() as demo:
         with gr.Column():
             display = gr.Plot()
         with gr.Column():
-            m1 = gr.Dropdown(choices=models, label='Model 1')
-            m2 = gr.Dropdown(choices=models, label='Model 2')
+            drops = ft.partial(gr.Dropdown, choices=models)
+            inputs = [ drops(label=f'Model {x}') for x in range(1, 3) ]
 
             button = gr.Button(value='Compare!')
-            button.click(cplot(df), inputs=[m1, m2], outputs=[display])
+            button.click(cplot(df), inputs=inputs, outputs=[display])
 
 demo.launch()
