@@ -26,8 +26,12 @@ if __name__ == '__main__':
 
     ax = df.plot.scatter('ability', 'y')
     ax.hlines(df['y'], xmin=df['lower'], xmax=df['upper'], alpha=0.5)
-    ax.set_yticks(df['y'], df['model'])
     ax.set_ylabel('')
-    ax.grid(visible=True, axis='x', alpha=0.25, linestyle='dashed')
+    ax.set_yticks(df['y'], df['model'])
+
+    ax.grid(visible=True,
+            axis='both',
+            alpha=0.25,
+            linestyle='dashed')
 
     plt.savefig(args.output, bbox_inches='tight')
