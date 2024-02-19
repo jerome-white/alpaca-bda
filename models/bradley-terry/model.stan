@@ -13,7 +13,7 @@ data {
 }
 
 parameters {
-  vector[K] alpha;     // ability for player k
+  vector[K] alpha;         // ability for player k
   real<lower=0.001> sigma; // scale of ability variation
 }
 
