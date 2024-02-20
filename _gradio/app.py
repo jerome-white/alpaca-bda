@@ -146,6 +146,8 @@ with gr.Blocks() as demo:
     path = Path('..', 'c.csv')
     df = load(path)
 
+    gr.Markdown(Path('README.md').read_text())
+
     with gr.Row():
         plotter = RankPlotter(df)
         gr.Plot(plotter.plot())
@@ -169,5 +171,8 @@ with gr.Blocks() as demo:
 
             button = gr.Button(value='Compare!')
             button.click(cplot(df), inputs=inputs, outputs=[display])
+
+    with gr.Accordion('Disclaimer', open=False):
+        gr.Markdown(Path('DISCLAIMER.md').read_text())
 
 demo.launch()
