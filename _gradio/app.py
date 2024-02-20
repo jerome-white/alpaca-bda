@@ -46,11 +46,14 @@ def summarize(df, ci=0.95):
 
     return pd.DataFrame.from_records(records)
 
-def rank(df, ascending):
+def rank(df, ascending, name='rank'):
+    index = range(1, len(df) + 1)
     return (df
             .sort_values(by=['ability',  'uncertainty'],
                          ascending=[ascending, not ascending])
-            .drop(columns='uncertainty'))
+            .drop(columns='uncertainty')
+            .reset_index(drop=True)
+            .reset_index(names=name))
 
 def compare(df, model_1, model_2):
     mcol = 'model'
@@ -96,10 +99,8 @@ class RankPlotter(DataPlotter):
         return self.df[self._y]
 
     def __init__(self, df, top=10):
-        view = rank(summarize(df), True)
+        view = rank(summarize(df), True, self._y)
         view = (view
-                .reset_index(drop=True)
-                .reset_index(names=self._y)
                 .tail(top)
                 .sort_values(by=self._y, ascending=False))
         super().__init__(view)
@@ -154,11 +155,7 @@ with gr.Blocks() as demo:
 
     with gr.Row():
         view = rank(summarize(df), False)
-        view = (view
-                .reset_index(drop=True)
-                .reset_index(names='rank')
-                .style
-                .format(precision=4))
+        view = view.style.format(precision=4)
         gr.Dataframe(view)
 
     with gr.Row():
