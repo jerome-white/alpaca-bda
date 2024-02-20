@@ -149,11 +149,14 @@ with gr.Blocks() as demo:
     path = Path('..', 'c.csv')
     df = load(path)
 
-    gr.Markdown(Path('README.md').read_text())
-
+    gr.Markdown('# Alpaca Bradley–Terry')
     with gr.Row():
-        plotter = RankPlotter(df)
-        gr.Plot(plotter.plot())
+        with gr.Column():
+            gr.Markdown(Path('README.md').read_text())
+
+        with gr.Column():
+            plotter = RankPlotter(df)
+            gr.Plot(plotter.plot())
 
     with gr.Row():
         view = rank(summarize(df), False)
@@ -169,6 +172,7 @@ with gr.Blocks() as demo:
     with gr.Row():
         with gr.Column(scale=3):
             display = gr.Plot()
+
         with gr.Row():
             with gr.Column():
                 gr.Markdown('''

@@ -1,5 +1,3 @@
-# Alpaca Bradley–Terry
-
 [Alpaca](https://github.com/tatsu-lab/alpaca_eval) is an LLM
 evaluation framework. It maintains a set of prompts, along with
 responses to those prompts from a collection of LLMs. It then presents
