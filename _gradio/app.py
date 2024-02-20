@@ -86,7 +86,7 @@ class DataPlotter:
         ax.grid(visible=True,
                 axis='both',
                 alpha=0.25,
-                linestyle='dashed')
+                linestyle='dotted')
 
         fig = ax.get_figure()
         fig.tight_layout()
@@ -130,7 +130,9 @@ class ComparisonPlotter(DataPlotter):
         ax = sns.ecdfplot(self.df)
 
         (_, color, *_) = sns.color_palette()
-        ax.axvline(x=self.df.median(), color=color)
+        ax.axvline(x=self.df.median(),
+                   color=color,
+                   linestyle='dashed')
         ax.axvspan(xmin=self.interval.lower,
                    xmax=self.interval.upper,
                    alpha=0.15,
@@ -181,11 +183,11 @@ with gr.Blocks() as demo:
                 gr.Markdown('''
 
                 Probability that Model 1 is preferred to Model 2. The
-                blue sigmoid-like curve is a CDF of that distribution;
+                solid blue curve is a CDF of that distribution;
                 formally the inverse logit of the difference in model
-                abilities. The orange vertical line is the median,
-                while the band surrounding it is its 95% [highest
-                density
+                abilities. The dashed orange vertical line is the
+                median, while the band surrounding it is its 95%
+                [highest density
                 interval](https://cran.r-project.org/package=HDInterval).
 
                 ''')
