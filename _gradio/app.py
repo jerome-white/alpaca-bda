@@ -167,15 +167,28 @@ with gr.Blocks() as demo:
         gr.Dataframe(view)
 
     with gr.Row():
-        models = df['model'].unique().tolist()
-        with gr.Column():
+        with gr.Column(scale=3):
             display = gr.Plot()
-        with gr.Column():
-            drops = ft.partial(gr.Dropdown, choices=models)
-            inputs = [ drops(label=f'Model {x}') for x in range(1, 3) ]
+        with gr.Row():
+            with gr.Column():
+                gr.Markdown('''
 
-            button = gr.Button(value='Compare!')
-            button.click(cplot(df), inputs=inputs, outputs=[display])
+                Probability that Model 1 is preferred to Model 2. The
+                blue sigmoid-like curve is a CDF of that distribution;
+                formally the inverse logit of the difference in model
+                abilities. The orange vertical line is the median,
+                while the band surrounding it is its 95% [highest
+                density
+                interval](https://cran.r-project.org/package=HDInterval).
+
+                ''')
+            with gr.Column():
+                models = sorted(df['model'].unique(), key=lambda x: x.lower())
+                drops = ft.partial(gr.Dropdown, choices=models)
+                inputs = [ drops(label=f'Model {x}') for x in range(1, 3) ]
+
+                button = gr.Button(value='Compare!')
+                button.click(cplot(df), inputs=inputs, outputs=[display])
 
     with gr.Accordion('Disclaimer', open=False):
         gr.Markdown(Path('DISCLAIMER.md').read_text())
