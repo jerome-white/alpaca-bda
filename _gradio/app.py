@@ -7,7 +7,7 @@ import gradio as gr
 import seaborn as sns
 from scipy.special import expit
 
-from hdi import hdi
+from hdi import HDI, hdi
 
 #
 #
@@ -156,7 +156,13 @@ with gr.Blocks() as demo:
 
     with gr.Row():
         view = rank(summarize(df), False)
-        view = view.style.format(precision=4)
+        columns = { x: f'HDI {x}' for x in HDI._fields }
+        for i in view.columns:
+            columns.setdefault(i, i.title())
+        view = (view
+                .rename(columns=columns)
+                .style.format(precision=4))
+
         gr.Dataframe(view)
 
     with gr.Row():
