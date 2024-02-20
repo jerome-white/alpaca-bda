@@ -129,8 +129,9 @@ class ComparisonPlotter(DataPlotter):
         ax.axvline(x=self.df.median(), color=color)
         ax.axvspan(xmin=self.interval.lower,
                    xmax=self.interval.upper,
-                   alpha=0.2,
+                   alpha=0.15,
                    color=color)
+        ax.set_xlabel('Pr(M$_{1}$ \u003E M$_{2}$)')
 
         return ax
 
