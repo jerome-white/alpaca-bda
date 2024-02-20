@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 import gradio as gr
 import seaborn as sns
+from datasets import load_dataset
 from scipy.special import expit
 
 from hdi import HDI, hdi
@@ -12,18 +13,21 @@ from hdi import HDI, hdi
 #
 #
 #
-def load(path):
+def load(repo):
     parameter = 'parameter'
-    usecols = [
+    items = [
         'chain',
         'sample',
         parameter,
         'model',
         'value',
     ]
+    dataset = load_dataset(repo)
 
-    return (pd
-            .read_csv(path, usecols=usecols, memory_map=True)
+    return (dataset
+            .get('train')
+            .to_pandas()
+            .filter(items=items)
             .query(f'{parameter} == "alpha"')
             .drop(columns=parameter))
 
@@ -146,8 +150,7 @@ def cplot(df, ci=0.95):
 #
 #
 with gr.Blocks() as demo:
-    path = Path('..', 'c.csv')
-    df = load(path)
+    df = load('jerome-white/alpaca-bt-stan')
 
     gr.Markdown('# Alpaca Bradley–Terry')
     with gr.Row():
