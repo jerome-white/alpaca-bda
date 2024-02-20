@@ -7,5 +7,16 @@ STAN_MODEL=$ROOT/models/bradley-terry
 export PYTHONPATH=$ROOT
 export PYTHONLOGLEVEL=info
 
+_output=data/results.csv.gz
+
+mkdir --parents `dirname $_output`
+
 python aggregate-output.py --results $STAN_MODEL/output \
-    | python add-model-names.py --models $ROOT/models.csv --chunk-size 100000
+    | python add-model-names.py \
+	     --models $ROOT/models.csv \
+	     --chunk-size 100000 \
+    | gzip --to-stdout --best > $_output
+
+python push-to-hub.py \
+       --source $_output \
+       --target jerome-white/alpaca-bt-stan
