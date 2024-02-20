@@ -9,20 +9,24 @@ model win percentage.
 
 This Space presents an alternative method of ranking based on the
 [Bradley–Terry
-model](https://en.wikipedia.org/wiki/Bradley%E2%80%93Terry_model). Given
-a collection of items and pairwise comparisons of those items,
-Bradley–Terry estimates the "ability" of each item based known
-pairwise comparisons. The strength of a given sports team, for
-example, based on previous games played. Once calculated, the ability
-can be used to estimate the probability that one item will be
-better-than another, even if those two items have not been formally
-compared in the past. The Alpaca framework is a good opportunity to
-apply this model in practice.
+model](https://en.wikipedia.org/wiki/Bradley%E2%80%93Terry_model)
+(BT). Given a collection of items, Bradley–Terry estimates the
+_ability_ of each item based on pairwise comparisons between them. In
+sports, for example, that might be the ability of a given team based
+on games that team has played within a league. Once calculated,
+ability can be used to estimate the probability that one item will be
+better-than another, even if those items have yet to be formally
+compared.
 
-This Space has two sections: the first presents a ranking of models
-based on estimated ability; the other estimates the probability that
-one model will be preferred to another. Metrics in this section are a
-result of a pipeline that parses Alpaca data, then estimates ability
-using a Bayesian formalization of Bradley–Terry modelled in
-[Stan](https://mc-stan.org/). Please see the disclaimer for details of
-the workflow, and to put results into perspective.
+The Alpaca project presents a good opportunity to apply BT in
+practice; especially since BT fits nicely into a Bayesian analysis
+framework. As LLMs become more pervasive, quantifying the uncertainty
+in their evaluation is increasingly important. Bayesian frameworks are
+good at that.
+
+This Space is divided into two primary sections: the first presents a
+ranking of models based on estimated ability. The figure on the right
+presents this ranking for the top 10 models, while the table below
+presents the full set. The second section estimates the probability
+that one model will be preferred to another. A final section at the
+bottom is a disclaimer that presents details about the workflow.
