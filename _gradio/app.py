@@ -47,13 +47,14 @@ def summarize(df, ci=0.95):
     return pd.DataFrame.from_records(records)
 
 def rank(df, ascending, name='rank'):
-    index = range(1, len(df) + 1)
-    return (df
-            .sort_values(by=['ability',  'uncertainty'],
-                         ascending=[ascending, not ascending])
-            .drop(columns='uncertainty')
-            .reset_index(drop=True)
-            .reset_index(names=name))
+    df = (df
+          .sort_values(by=['ability',  'uncertainty'],
+                       ascending=[ascending, not ascending])
+          .drop(columns='uncertainty')
+          .reset_index(drop=True))
+    df.index += 1
+
+    return df.reset_index(names=name)
 
 def compare(df, model_1, model_2):
     mcol = 'model'
