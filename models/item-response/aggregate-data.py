@@ -21,8 +21,10 @@ def func(incoming, outgoing, args):
             try:
                 (respondent, ) = models.difference(baselines)
             except ValueError:
-                raise LookupError(f'Cannot establish baseline: {models}')
-            correct = row['preference'] not in baselines
+                # raise LookupError(f'Cannot establish baseline: {models}')
+                Logger.error(f'Cannot establish baseline: {models}')
+                continue
+            correct = i['preference'] not in baselines
 
             results.append({
                 'prompt': i['prompt_id'],
