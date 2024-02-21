@@ -43,9 +43,7 @@ if [ $_evaluate ]; then
 
     mkdir --parents `dirname $output`
     python $ROOT/utils/aggregate-output.py --results $_src/output \
-	| python $_src/add-model-names.py \
-		 --models $_llms \
-		 --chunk-size 100000 \
+	| python $_src/add-model-names.py --models $_llms \
 	| gzip --to-stdout --best > $output
 
     python $ROOT/utils/push-to-hub.py \

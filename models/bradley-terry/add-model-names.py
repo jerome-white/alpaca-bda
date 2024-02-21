@@ -42,7 +42,7 @@ def func(incoming, outgoing, args):
 if __name__ == '__main__':
     arguments = ArgumentParser()
     arguments.add_argument('--models', type=Path)
-    arguments.add_argument('--chunk-size', type=int, default=10000)
+    arguments.add_argument('--chunk-size', type=int, default=100000)
     arguments.add_argument('--workers', type=int)
     args = arguments.parse_args()
 
