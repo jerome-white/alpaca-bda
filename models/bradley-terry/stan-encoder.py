@@ -60,8 +60,7 @@ def extract(df):
     for i in df.columns:
         values = (df[i]
                   .astype(int)
-                  .to_numpy()
-                  .tolist())
+                  .to_list())
 
         yield (i, values)
 
