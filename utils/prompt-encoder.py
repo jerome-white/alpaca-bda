@@ -1,7 +1,6 @@
 import sys
 import csv
 import json
-import uuid
 import collections as cl
 from pathlib import Path
 from argparse import ArgumentParser
@@ -18,25 +17,17 @@ class ModelComparison:
 class PromptEncoder:
     def __init__(self, keys):
         self.prompt = cl.namedtuple('Prompt', keys)
-        self.used = set()
         self.cache = {}
 
     def __iter__(self):
         for (k, v) in self.cache.items():
             yield dict(k._asdict(), prompt_id=v)
 
-    def __next__(self):
-        while True:
-            pid = str(uuid.uuid4())
-            if pid not in self.used:
-                self.used.add(pid)
-                return pid
-
     def transform(self, info):
         args = map(info.get, self.prompt._fields)
         prompt = self.prompt(*args)
         if prompt not in self.cache:
-            self.cache[prompt] = next(self)
+            self.cache[prompt] = len(self.cache)
 
         return self.cache[prompt]
 
