@@ -1,6 +1,5 @@
 import sys
 import csv
-from argparse import ArgumentParser
 
 import pandas as pd
 
