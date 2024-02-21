@@ -4,7 +4,7 @@ from pathlib import Path
 from argparse import ArgumentParser
 from multiprocessing import Pool, Queue
 
-from utils import Logger
+from mylib import Logger
 
 def mnames(path):
     keys = (

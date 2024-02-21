@@ -2,7 +2,7 @@
 
 ROOT=`git rev-parse --show-toplevel`
 
-export PYTHONPATH=$ROOT
+export PYTHONPATH=$ROOT/mylib
 export PYTHONLOGLEVEL=info
 
 _src=$ROOT/models/bradley-terry

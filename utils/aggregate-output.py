@@ -6,7 +6,7 @@ from multiprocessing import Pool, Queue
 
 import pandas as pd
 
-from utils import Logger
+from mylib import Logger
 
 def func(incoming, outgoing):
     columns = {

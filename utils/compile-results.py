@@ -6,7 +6,7 @@ from argparse import ArgumentParser
 from dataclasses import dataclass, asdict, fields
 from multiprocessing import Pool, Queue
 
-from utils import Logger
+from mylib import Logger
 
 @dataclass
 class ModelComparison:

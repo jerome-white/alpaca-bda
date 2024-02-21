@@ -6,8 +6,7 @@ from multiprocessing import Pool, Queue
 
 import pandas as pd
 
-from hdi import hdi
-from utils import Logger
+from mylib import Logger, hdi
 
 def mnames(path):
     keys = (
