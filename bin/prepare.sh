@@ -2,9 +2,6 @@
 
 ROOT=`git rev-parse --show-toplevel`
 
-export PYTHONPATH=$ROOT
-export PYTHONLOGLEVEL=info
-
 _alpaca_eval=alpaca_eval
 _alpaca_git=$ROOT/$_alpaca_eval
 _output=$ROOT/etc
