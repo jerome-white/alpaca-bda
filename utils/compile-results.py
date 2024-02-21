@@ -8,6 +8,9 @@ from multiprocessing import Pool, Queue
 
 from mylib import Logger
 
+class ModelComparisonError(Exception):
+    pass
+
 @dataclass
 class ModelComparison:
     annotator: str
@@ -19,12 +22,10 @@ class ModelComparison:
 
     def __post_init__(self):
         try:
-            attr = 'generator_{}'.format(int(self.preference))
-            value = getattr(self, attr)
-        except (TypeError, ValueError, AttributeError):
-            value = ''
-
-        self.preference = value
+            value = float(self.preference)
+            self.preference = '' if value == 1.5 else f'generator_{value:.0f}'
+        except (TypeError, ValueError, AttributeError) as err:
+            raise ModelComparisonError() from err
 
 def func(incoming, outgoing):
     keys = [x.name for x in fields(ModelComparison)]
@@ -40,10 +41,10 @@ def func(incoming, outgoing):
         for i in data:
             try:
                 kwargs = {x: i[x] for x in keys}
-            except KeyError as err:
+                comparison = ModelComparison(**kwargs)
+            except (KeyError, ModelComparisonError) as err:
                 Logger.warning(f'{path}: {err}')
                 continue
-            comparison = ModelComparison(**kwargs)
             results.append(asdict(comparison))
 
         outgoing.put(results)
