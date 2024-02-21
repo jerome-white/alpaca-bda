@@ -19,12 +19,19 @@ while getopts 'pseh' option; do
     esac
 done
 
+baselines=(
+    text_davinci_003
+    # gpt4_turbo
+    gpt4_1106_preview
+)
+baseline=`sed -e's/ / --baseline /g' <<< ${baselines[@]}`
+
 #
 #
 #
 if [ $_prepare ]; then
     $ROOT/bin/prepare.sh \
-	| python $_src/aggregate-data.py \
+	| python $_src/aggregate-data.py --baseline $baseline \
 	| python $_src/stan-encoder.py --record $_llms > $_src/data.json
 fi
 
