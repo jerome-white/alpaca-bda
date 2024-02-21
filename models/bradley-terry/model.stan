@@ -1,7 +1,7 @@
 /**
  * Bradley-Terry Model
  *
- * Modified from the Stan development team
+ * https://github.com/stan-dev/example-models/tree/master/knitr/bradley-terry
  **/
 
 data {
