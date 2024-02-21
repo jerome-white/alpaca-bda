@@ -19,15 +19,15 @@ def func(incoming, outgoing, args):
         for i in rows:
             models = set(map(i.get, mcols))
             try:
-                (respondent, ) = models.difference(baseline)
+                (respondent, ) = models.difference(baselines)
             except ValueError:
                 raise LookupError(f'Cannot establish baseline: {models}')
             correct = row['preference'] not in baselines
 
             results.append({
-                'prompt': i['instruction'],
+                'prompt': i['prompt_id'],
                 'model': respondent,
-                'correct': correct,
+                'correct': int(correct),
             })
 
         outgoing.put(results)
@@ -56,6 +56,6 @@ if __name__ == '__main__':
         for _ in range(len(reader)):
             rows = incoming.get()
             if writer is None:
-                writer = csv.DictWriter(sys.stdout, fieldnames=row)
+                writer = csv.DictWriter(sys.stdout, fieldnames=rows[0])
                 writer.writeheader()
             writer.writerows(rows)
