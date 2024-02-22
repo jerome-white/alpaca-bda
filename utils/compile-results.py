@@ -22,8 +22,11 @@ class ModelComparison:
 
     def __post_init__(self):
         try:
-            value = float(self.preference)
-            self.preference = '' if value == 1.5 else f'generator_{value:.0f}'
+            choice = float(self.preference)
+            if choice == 1.5:
+                self.preference = ''
+            else:
+                self.preference = getattr(self, f'generator_{choice:.0f}')
         except (TypeError, ValueError, AttributeError) as err:
             raise ModelComparisonError() from err
 
