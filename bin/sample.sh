@@ -2,10 +2,10 @@
 
 _samples=2000
 _workers=`nproc`
-while getopts 'm:n:w:h' option; do
+while getopts 'm:s:w:h' option; do
     case $option in
         m) _model=$OPTARG ;;
-	n) _samples=$OPTARG ;;
+	s) _samples=$OPTARG ;;
 	w) _workers=$OPTARG ;;
         *)
             echo -e Unrecognized option \"$option\"
