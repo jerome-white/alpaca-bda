@@ -23,7 +23,7 @@ def each(fp):
                 result['y'] = scores[k]
                 break
         else:
-            raise ValueError('Unexpected preference: {i.preference}')
+            raise ValueError(f'Unexpected preference: {i.preference}')
 
         yield result
 
