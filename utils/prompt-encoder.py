@@ -27,7 +27,7 @@ class PromptEncoder:
         args = map(info.get, self.prompt._fields)
         prompt = self.prompt(*args)
         if prompt not in self.cache:
-            self.cache[prompt] = len(self.cache)
+            self.cache[prompt] = len(self.cache) + 1
 
         return self.cache[prompt]
 
