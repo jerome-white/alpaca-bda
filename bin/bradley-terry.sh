@@ -26,14 +26,14 @@ if [ $_prepare ]; then
     $ROOT/bin/prepare.sh \
 	| python $_src/aggregate-data.py \
 	| python $_src/stan-encoder.py --record $_llms > $_src/data.json
-fi
+fi || exit 1
 
 #
 #
 #
 if [ $_sample ]; then
-    $ROOT/bin/sample.sh -m $_src
-fi
+    $ROOT/bin/sample.sh -m $_src -s 12000
+fi || exit 2
 
 #
 #
@@ -49,4 +49,4 @@ if [ $_evaluate ]; then
     python $ROOT/utils/push-to-hub.py \
 	   --source $output \
 	   --target jerome-white/alpaca-bt-stan
-fi
+fi || exit 3

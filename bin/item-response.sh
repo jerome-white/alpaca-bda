@@ -33,11 +33,11 @@ if [ $_prepare ]; then
     $ROOT/bin/prepare.sh \
 	| python $_src/aggregate-data.py --baseline $baseline \
 	| python $_src/stan-encoder.py --record $_llms > $_src/data.json
-fi
+fi || exit 1
 
 #
 #
 #
 if [ $_sample ]; then
     $ROOT/bin/sample.sh -m $_src
-fi
+fi || exit 2
