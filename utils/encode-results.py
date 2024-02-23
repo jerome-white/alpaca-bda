@@ -1,9 +1,15 @@
 import sys
-import csv
+import json
 from pathlib import Path
 from argparse import ArgumentParser
 
 import pandas as pd
+
+def traverse(values, start, rev=False):
+    for i in enumerate(values, start):
+        if rev:
+            i = tuple(reversed(i))
+        yield i
 
 if __name__ == '__main__':
     arguments = ArgumentParser()
@@ -12,28 +18,30 @@ if __name__ == '__main__':
     args = arguments.parse_args()
 
     df = pd.read_csv(sys.stdin)
-    columns = (
-        ('instruction', ),
-        ('generator_1', 'generator_2', 'preference'),
-    )
+    columns = {
+        'prompt': (
+            'instruction',
+        ),
+        'model': (
+            'generator_1',
+            'generator_2',
+            'preference',
+        ),
+    }
+    encodings = {}
     to_replace = {}
 
-    for cols in columns:
+    for (k, v) in columns.items():
         values = (df
-                  .filter(items=cols)
+                  .filter(items=v)
                   .dropna()
                   .unstack()
                   .unique())
-        factors = dict(map(reversed, enumerate(values, args.start)))
-        to_replace.update({x: factors for x in cols})
+        encodings[k] = dict(traverse(values, args.start))
+        factors = dict(traverse(values, args.start, True))
+        to_replace.update({x: factors for x in v})
     df = df.replace(to_replace=to_replace)
     df.to_csv(sys.stdout, index=False)
 
-    if args.save_encodings is not None:
-        fieldnames = (
-            'ftype',
-            'code',
-            'value',
-        )
-        with args.save_encodings.open('w') as fp:
-            json.dump(to_replace, fp, indent=2)
+    with args.save_encodings.open('w') as fp:
+        json.dump(encodings, fp, indent=2)

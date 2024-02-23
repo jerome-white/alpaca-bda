@@ -6,7 +6,7 @@ export PYTHONPATH=$ROOT
 export PYTHONLOGLEVEL=info
 
 _src=$ROOT/models/bradley-terry
-_llms=$_src/models.csv
+_codes=$_src/codes.json
 while getopts 'pseh' option; do
     case $option in
 	p) _prepare=1 ;;
@@ -23,9 +23,9 @@ done
 #
 #
 if [ $_prepare ]; then
-    $ROOT/bin/prepare.sh \
+    $ROOT/bin/prepare.sh -o $_src -e $_codes \
 	| python $_src/aggregate-data.py \
-	| python $_src/stan-encoder.py --record $_llms > $_src/data.json
+	| python $_src/stan-encoder.py > $_src/data.json
 fi || exit 1
 
 #
@@ -39,11 +39,17 @@ fi || exit 2
 #
 #
 if [ $_evaluate ]; then
-    output=$_src/data/results.csv.gz
-
-    mkdir --parents `dirname $output`
     python $ROOT/utils/aggregate-output.py --results $_src/output \
-	| python $_src/add-model-names.py --models $_llms \
+	| python $ROOT/utils/unencode-results.py \
+		 --encodings $_codes \
+		 --parameter alpha:model
+    exit
+    output=$_src/results.csv.gz
+
+    python $ROOT/utils/aggregate-output.py --results $_src/output \
+	| python $ROOT/utils/unencode-results.py \
+		 --encodings $_codes \
+		 --parameter alpha:model \
 	| gzip --to-stdout --best > $output
 
     python $ROOT/utils/push-to-hub.py \
