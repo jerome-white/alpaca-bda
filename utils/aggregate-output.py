@@ -2,33 +2,27 @@ import sys
 import csv
 from pathlib import Path
 from argparse import ArgumentParser
-from multiprocessing import Pool, Queue
+from multiprocessing import Pool
 
 import pandas as pd
 
 from mylib import Logger
 
-def func(incoming, outgoing):
-    columns = {
-        'level_0': 'parameter',
-        'level_1': 'sample',
-        0: 'value',
-    }
+def func(args):
+    Logger.info(args)
 
-    while True:
-        path = incoming.get()
-        Logger.info(path)
-
-        (*_, chain) = path.stem.split('_')
-        records = (pd
-                   .read_csv(path, comment='#', memory_map=True)
-                   .unstack()
-                   .reset_index()
-                   .rename(columns=columns)
-                   .assign(chain=chain)
-                   .to_dict(orient='records'))
-
-        outgoing.put(records)
+    (*_, chain) = args.stem.split('_')
+    return (pd
+            .read_csv(args, comment='#', memory_map=True)
+            .unstack()
+            .reset_index()
+            .rename(columns={
+                'level_0': 'parameter',
+                'level_1': 'sample',
+                0: 'value',
+            })
+            .assign(chain=chain)
+            .to_dict(orient='records'))
 
 if __name__ == '__main__':
     arguments = ArgumentParser()
@@ -36,25 +30,10 @@ if __name__ == '__main__':
     arguments.add_argument('--workers', type=int)
     args = arguments.parse_args()
 
-    incoming = Queue()
-    outgoing = Queue()
-    initargs = (
-        outgoing,
-        incoming,
-    )
-
-    with Pool(args.workers, func, initargs):
-        jobs = 0
-        for i in args.results.rglob('*.csv'):
-            outgoing.put(i)
-            jobs += 1
-
+    with Pool(args.workers) as pool:
         writer = None
-        for _ in range(jobs):
-            rows = incoming.get()
-            if rows:
-                if writer is None:
-                    fieldnames = rows[0]
-                    writer = csv.DictWriter(sys.stdout, fieldnames=fieldnames)
-                    writer.writeheader()
-                writer.writerows(rows)
+        for i in pool.imap_unordered(func, args.results.rglob('*.csv')):
+            if writer is None:
+                writer = csv.DictWriter(sys.stdout, fieldnames=i[0])
+                writer.writeheader()
+            writer.writerows(i)
