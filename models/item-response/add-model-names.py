@@ -10,9 +10,14 @@ from mylib import Logger, DataReader, ModelUnencoder, PromptUnencoder
 #
 #
 def func(incoming, outgoing, args):
-    _dot = '.'
     _parameter = 'parameter'
-    _models = ModelNamer(args.models)
+
+    pu = PromptUnencoder(args.prompts)
+    _unencoders = {
+        'alpha': pu,
+        'beta': pu,
+        'theta': ModelUnencoder(args.models),
+    }
 
     while True:
         samples = incoming.get()
@@ -20,20 +25,30 @@ def func(incoming, outgoing, args):
 
         records = []
         for s in samples:
-            param = s[_parameter]
-            if param.find(_dot) >= 0:
-                (name, index) = param.split(_dot)
+            param = s.get(_parameter)
+
+            parts = param.split('.')
+            n = len(parts)
+            if n == 1:
+                value = ''
+            elif n == 2:
+                (name, index) = parts
                 s[_parameter] = name
-                model = _models[index]
+                value = (_unencoders
+                         .get(name)
+                         .get(int(index)))
+                assert value, f'{name} {index}'
             else:
-                model = ''
-            s['model'] = model
+                raise ValueError(f'Too many dots in parameter name: {param}')
+
+            s['name'] = value
             records.append(s)
         outgoing.put(records)
 
 if __name__ == '__main__':
     arguments = ArgumentParser()
     arguments.add_argument('--models', type=Path)
+    arguments.add_argument('--prompts', type=Path)
     arguments.add_argument('--chunk-size', type=int, default=100000)
     arguments.add_argument('--workers', type=int)
     args = arguments.parse_args()
