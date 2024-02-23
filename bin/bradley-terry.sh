@@ -39,11 +39,6 @@ fi || exit 2
 #
 #
 if [ $_evaluate ]; then
-    python $ROOT/utils/aggregate-output.py --results $_src/output \
-	| python $ROOT/utils/unencode-results.py \
-		 --encodings $_codes \
-		 --parameter alpha:model
-    exit
     output=$_src/results.csv.gz
 
     python $ROOT/utils/aggregate-output.py --results $_src/output \
