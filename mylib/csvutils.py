@@ -1,5 +1,6 @@
 import csv
 import random
+import warnings
 
 class DataReader:
     def __init__(self, fp, chunks, slack=0.1):
@@ -13,7 +14,8 @@ class DataReader:
 
         for row in self.reader:
             window.append(row)
-            if len(window) >= self.upper:
+            limit -= 1
+            if limit < 1:
                 yield window
                 self.windows += 1
                 (window, limit) = next(self)
