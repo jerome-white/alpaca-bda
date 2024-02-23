@@ -4,23 +4,12 @@ from pathlib import Path
 from argparse import ArgumentParser
 from multiprocessing import Pool, Queue
 
-from mylib import Logger, DataReader
-
-def mnames(path):
-    keys = (
-        'model_id',
-        'name',
-    )
-
-    with path.open() as fp:
-        reader = csv.DictReader(fp)
-        for row in reader:
-            yield tuple(map(row.get, keys))
+from mylib import Logger, DataReader, ModelUnencoder
 
 def func(incoming, outgoing, args):
     _dot = '.'
     _parameter = 'parameter'
-    _models = dict(mnames(args.models))
+    _models = ModelUnencoder(args.models)
 
     while True:
         samples = incoming.get()
