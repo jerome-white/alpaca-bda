@@ -30,8 +30,20 @@ class ModelComparison:
         except (TypeError, ValueError, AttributeError) as err:
             raise ModelComparisonError() from err
 
-def func(incoming, outgoing):
+    def __iter__(self):
+        for i in fields(self):
+            if x.name.startswith('generator'):
+                yield getattr(self, i)
+
+    def is_baseline(self, baselines):
+        assert any(x in baselines for x in self)
+        assert self.generator_2 not in baselines
+
+        return self.generator_1 in baselines
+
+def func(incoming, outgoing, args):
     keys = [x.name for x in fields(ModelComparison)]
+    baselines = set(args.baseline)
 
     while True:
         path = incoming.get()
@@ -48,12 +60,17 @@ def func(incoming, outgoing):
             except (KeyError, ModelComparisonError) as err:
                 Logger.warning(f'{path}: {err}')
                 continue
-            results.append(asdict(comparison))
+
+            if baselines and comparison.is_baseline(baselines):
+                Logger.warning(f'{path}: Baseline not present')
+            else:
+                results.append(asdict(comparison))
 
         outgoing.put(results)
 
 if __name__ == '__main__':
     arguments = ArgumentParser()
+    arguments.add_argument('--baseline', action='append')
     arguments.add_argument('--results', type=Path)
     arguments.add_argument('--workers', type=int)
     args = arguments.parse_args()
@@ -63,6 +80,7 @@ if __name__ == '__main__':
     initargs = (
         outgoing,
         incoming,
+        args,
     )
 
     with Pool(args.workers, func, initargs):
