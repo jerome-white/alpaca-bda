@@ -30,17 +30,6 @@ class ModelComparison:
         except (TypeError, ValueError, AttributeError) as err:
             raise ModelComparisonError() from err
 
-    def __iter__(self):
-        for i in fields(self):
-            if i.name.startswith('generator'):
-                yield getattr(self, i.name)
-
-    def is_baseline(self, baselines):
-        assert any(x in baselines for x in self)
-        assert self.generator_2 not in baselines
-
-        return self.generator_1 in baselines
-
 def func(incoming, outgoing, args):
     keys = [x.name for x in fields(ModelComparison)]
     baselines = set(args.baseline or [])
@@ -61,7 +50,7 @@ def func(incoming, outgoing, args):
                 Logger.warning(f'{path}: {err}')
                 continue
 
-            if baselines and comparison.is_baseline(baselines):
+            if baselines and comparison.generator_1 not in baselines:
                 Logger.warning(f'{path}: Baseline not present')
             else:
                 results.append(asdict(comparison))
