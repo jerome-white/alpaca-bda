@@ -5,9 +5,8 @@ ROOT=`git rev-parse --show-toplevel`
 _alpaca_eval=alpaca_eval
 _alpaca_git=$ROOT/$_alpaca_eval
 
-while getopts 'o:e:' option; do
+while getopts 'e:' option; do
     case $option in
-	o) _output=$OPTARG ;;
 	e) _encodings=$OPTARG ;;
         *)
             echo -e Unrecognized option \"$option\"

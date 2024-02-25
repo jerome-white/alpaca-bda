@@ -23,7 +23,7 @@ done
 #
 #
 if [ $_prepare ]; then
-    $ROOT/bin/prepare.sh -o $_src -e $_codes \
+    $ROOT/bin/prepare.sh -e $_codes \
 	| python $_src/aggregate-data.py \
 	| python $_src/stan-encoder.py > $_src/data.json
 fi || exit 1
