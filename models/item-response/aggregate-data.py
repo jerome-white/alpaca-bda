@@ -7,13 +7,12 @@ import pandas as pd
 
 from mylib import Logger, DataReader
 
-def correct(model):
+def correctness(model):
     def assess(x):
         m = x[model]
         return (x['preference']
                 .combine_first(m)
-                .eq(m)
-                .astype(int))
+                .eq(m))
 
     return assess
 
@@ -21,10 +20,14 @@ def correct(model):
 #
 #
 def func(incoming, outgoing, args):
+    correct = 'correct'
     columns = {
         'instruction': 'prompt',
         args.target: 'model',
-        'preference': 'correct',
+    }
+    items = list(columns.values())
+    kwargs = {
+        correct: correctness(args.target),
     }
 
     while True:
@@ -34,14 +37,15 @@ def func(incoming, outgoing, args):
         records = (pd
                    .DataFrame
                    .from_records(rows)
-                   .assign(correct=correct(args.target))
-                   .filter(items=columns)
+                   .assign(**kwargs)
                    .rename(columns=columns)
+                   .filter(items=items)
                    .to_dict(orient='records'))
         outgoing.put(records)
 
 if __name__ == '__main__':
     arguments = ArgumentParser()
+    arguments.add_argument('--target', default='generator_2')
     arguments.add_argument('--chunk-size', type=int, default=100000)
     arguments.add_argument('--workers', type=int)
     args = arguments.parse_args()
