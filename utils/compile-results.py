@@ -32,8 +32,8 @@ class ModelComparison:
 
     def __iter__(self):
         for i in fields(self):
-            if x.name.startswith('generator'):
-                yield getattr(self, i)
+            if i.name.startswith('generator'):
+                yield getattr(self, i.name)
 
     def is_baseline(self, baselines):
         assert any(x in baselines for x in self)
