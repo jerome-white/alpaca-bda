@@ -31,7 +31,7 @@ baseline=`sed -e's/ / --baseline /g' <<< ${baselines[@]}`
 #
 if [ $_prepare ]; then
     $ROOT/bin/prepare.sh -e $_codes \
-	| python $_src/aggregate-data.py --baseline $baseline \
+	| python $_src/aggregate-data.py \
 	| python $_src/stan-encoder.py --record $_llms > $_src/data.json
 fi || exit 1
 
