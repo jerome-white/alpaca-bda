@@ -2,44 +2,56 @@ import sys
 import csv
 import json
 from pathlib import Path
-from argparse import ArgumentParser
 
 import pandas as pd
 
-def records(fp, encoder):
-    reader = csv.DictReader(fp)
-    for row in reader:
-        row.update(encoder.encode(row))
-        yield row
+class DataExtractor:
+    def __init__(self, df, usecols):
+        self.df = df
+        self.usecols = usecols
 
-def extract(df):
-    columns = {
-        'model': 'p_j',
-        'prompt': 'q_i',
-        'correct': 'y',
-    }
+    def __iter__(self):
+        raise NotImplementedError()
 
-    for i in df.columns:
-        key = columns[i]
-        values = (df[i]
-                  .astype(int)
-                  .to_list())
+class ConstantsExtractor(DataExtractor):
+    def __init__(self, df):
+        super().__init__(df, {
+            'prompt': 'I',
+            'model': 'J',
+        })
 
-        yield (key, values)
+    def __iter__(self):
+        for (k, v) in self.usecols.items():
+            data = self.df[k].nunique()
+            yield (v, data)
+
+class ValuesExtractor(DataExtractor):
+    def __init__(self, df):
+        super().__init__(df, {
+            'model': 'p_j',
+            'prompt': 'q_i',
+            'correct': 'y',
+        })
+
+    def __iter__(self):
+        for i in self.df.columns:
+            key = self.usecols[i]
+            values = (df[i]
+                      .astype(int)
+                      .to_list())
+
+            yield (key, values)
 
 if __name__ == '__main__':
-    arguments = ArgumentParser()
-    arguments.add_argument('--record', type=Path)
-    args = arguments.parse_args()
+    extractors = (
+        ConstantsExtractor,
+        ValuesExtractor,
+    )
+    df = pd.read_csv(sys.stdin)
 
-    with ModelNamer(output=args.record) as namer:
-        df = pd.DataFrame.from_records(records(sys.stdin, namer))
+    data = dict(N=len(df))
+    for i in extractors:
+        e = i(df)
+        data.update(e)
 
-        data = {
-            'I': df['prompt'].nunique(),
-            'J': len(namer),
-            'N': len(df),
-        }
-        data.update(extract(df))
-
-        json.dump(data, sys.stdout, indent=2)
+    json.dump(data, sys.stdout, indent=2)
