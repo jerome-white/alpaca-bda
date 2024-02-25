@@ -20,9 +20,9 @@ while getopts 'pseh' option; do
 done
 
 baselines=(
-    text_davinci_003
-    # gpt4_turbo
-    gpt4_1106_preview
+    # text_davinci_003
+    # gpt4_turbo # GPT cited in Alpaca documentation
+    gpt4_1106_preview # GPT found in the data
 )
 baseline=`sed -e's/ / --baseline /g' <<< ${baselines[@]}`
 
@@ -30,9 +30,9 @@ baseline=`sed -e's/ / --baseline /g' <<< ${baselines[@]}`
 #
 #
 if [ $_prepare ]; then
-    $ROOT/bin/prepare.sh -e $_codes \
+    $ROOT/bin/prepare.sh -b $baseline -e $_codes \
 	| python $_src/aggregate-data.py \
-	| python $_src/stan-encoder.py --record $_llms > $_src/data.json
+	| python $_src/stan-encoder.py > $_src/data.json
 fi || exit 1
 
 #
