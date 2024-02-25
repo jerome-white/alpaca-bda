@@ -43,7 +43,7 @@ class ModelComparison:
 
 def func(incoming, outgoing, args):
     keys = [x.name for x in fields(ModelComparison)]
-    baselines = set(args.baseline)
+    baselines = set(args.baseline or [])
 
     while True:
         path = incoming.get()
