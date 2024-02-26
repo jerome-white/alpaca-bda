@@ -47,7 +47,7 @@ def func(incoming, outgoing, args):
                 kwargs = {x: i[x] for x in keys}
                 comparison = ModelComparison(**kwargs)
             except (KeyError, ModelComparisonError) as err:
-                Logger.warning(f'{path}: {err}')
+                Logger.error(f'{path}: {err}')
                 continue
 
             if baselines and comparison.generator_1 not in baselines:
