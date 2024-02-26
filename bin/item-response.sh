@@ -1,17 +1,20 @@
 #!/bin/bash
 
 ROOT=`git rev-parse --show-toplevel`
+SRC=$ROOT/models/item-response
 
 export PYTHONPATH=$ROOT
 export PYTHONLOGLEVEL=info
 
-_src=$ROOT/models/item-response
-_codes=$_src/codes.json
-while getopts 'pseh' option; do
+_codes=$SRC/codes.json
+_output=$SRC/results.csv.gz
+
+while getopts 'pseuh' option; do
     case $option in
 	p) _prepare=1 ;;
 	s) _sample=1 ;;
 	e) _evaluate=1 ;;
+	u) _upload=1;;
         *)
             echo -e Unrecognized option \"$option\"
             exit 1
@@ -31,35 +34,40 @@ baseline=`sed -e's/ / --baseline /g' <<< ${baselines[@]}`
 #
 if [ $_prepare ]; then
     $ROOT/bin/prepare.sh -b $baseline -e $_codes \
-	| python $_src/aggregate-data.py \
-	| python $_src/stan-encoder.py > $_src/data.json
+	| python $SRC/aggregate-data.py \
+	| python $SRC/stan-encoder.py > $SRC/data.json
 fi || exit 1
 
 #
 #
 #
 if [ $_sample ]; then
-    $ROOT/bin/sample.sh -m $_src -s 4000
+    $ROOT/bin/sample.sh -m $SRC -s 4000
 fi || exit 2
 
 #
 #
 #
 if [ $_evaluate ]; then
-    output=$_src/results.csv.gz
     params=(
 	alpha:prompt
 	beta:prompt
 	theta:model
     )
-    parameter=`sed -e's/ / --parameter /g' <<< ${params[@]}`
+    parameter=`sed -e's/ / -p /g' <<< ${params[@]}`
 
-    python $ROOT/utils/aggregate-output.py --results $_src/output \
-	| python $ROOT/utils/unencode-results.py ${parameter[@]} \
-		 --encodings $_codes \
-	| gzip --to-stdout --best > $output
-
-    python $ROOT/utils/push-to-hub.py \
-	   --source $output \
-	   --target jerome-white/alpaca-ir-stan
+    $ROOT/bin/evaluate.sh \
+	-m $SRC \
+	-e $_codes \
+	-o $_output \
+	-p ${parameter[@]}
 fi || exit 3
+
+#
+#
+#
+if [ $_upload ]; then
+    python $ROOT/utils/push-to-hub.py \
+	   --source $_output \
+	   --target jerome-white/alpaca-ir-stan
+fi || exit 4
