@@ -21,11 +21,12 @@ def correctness(model):
 #
 def func(incoming, outgoing, args):
     correct = 'correct'
-    columns = {
-        'instruction': 'prompt',
-        args.target: 'model',
+    items = {
+        'prompt': 'instruction',
+        'model': args.target,
+        correct: None,
     }
-    items = list(columns.values())
+    columns = { y: x for (x, y) in items.items() if y is not None }
     kwargs = {
         correct: correctness(args.target),
     }
