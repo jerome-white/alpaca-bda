@@ -7,6 +7,12 @@ from argparse import ArgumentParser
 from datasets import Dataset
 
 class DataReader:
+    _conversions = {
+        'value': lambda x: float(x if x else 'nan'),
+        'chain': int,
+        'sample': int,
+    }
+    
     def __init__(self, source):
         self.source = source
 
@@ -14,13 +20,12 @@ class DataReader:
         with gzip.open(self.source, mode='rt') as fp:
             reader = csv.DictReader(fp)
             for row in reader:
-                for i in ('chain', 'sample'):
-                    row[i] = int(row[i])
-
-                value = row['value']
-                row['value'] = float(value if value else 'nan')
-
+                row.update(self.as_types(row))
                 yield row
+
+    def as_types(self, row):
+        for (k, v) in self._conversions.items():
+            yield (k, v(row[k]))
 
 if __name__ == '__main__':
     arguments = ArgumentParser()
