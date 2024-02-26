@@ -11,7 +11,7 @@ if __name__ == '__main__':
     arguments.add_argument('--target', type=Path)
     args = arguments.parse_args()
 
-    df = pd.read_csv(args.source, memory_map=True)
+    df = pd.read_csv(args.source, low_memory=False, memory_map=True)
 
     dataset = Dataset.from_pandas(df)
     dataset.push_to_hub(str(args.target))
