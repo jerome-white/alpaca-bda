@@ -13,25 +13,23 @@ def func(args):
 
     with args.open() as fp:
         data = yaml.safe_load(fp)
-    (info, _) = data.values()
 
-    return (
-        info['completions_kwargs']['model_name'],
-        info['pretty_name'],
-    )
+    for (k, v) in data.items():
+        v = v.get('pretty_name', k)
+        return (k, v)
 
 def configs(args):
     with Pool(args.workers) as pool:
-        iterable = args.configs.rglob('config.yaml')
+        iterable = args.configs.rglob('configs.yaml')
         yield from pool.imap_unordered(func, iterable)
 
 def translate(source, target):
     for (k, v) in source.items():
-        yield (k, target.get(v, v))
+        if v in target:
+            yield (k, target[v])
 
 if __name__ == '__main__':
     arguments = ArgumentParser()
-    arguments.add_argument('--param-name')
     arguments.add_argument('--configs', type=Path)
     arguments.add_argument('--workers', type=int)
     args = arguments.parse_args()
@@ -39,6 +37,6 @@ if __name__ == '__main__':
     model = 'model'
     source = json.load(sys.stdin)
     target = dict(configs(args))
-    source[model] = translate(source[model], target)
+    source[model].update(translate(source[model], target))
 
-    json.dump(encodings, sys.stdout, indent=2)
+    json.dump(source, sys.stdout, indent=2)
