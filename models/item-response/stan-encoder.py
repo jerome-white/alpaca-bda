@@ -5,12 +5,20 @@ from pathlib import Path
 
 import pandas as pd
 
+#
+#
+#
 class DataExtractor:
     def __init__(self, df, usecols):
         self.df = df
         self.usecols = usecols
 
     def __iter__(self):
+        for (k, v) in self.usecols.items():
+            values = self.extract(self.df[k])
+            yield (v, values)
+
+    def extract(self, values):
         raise NotImplementedError()
 
 class ConstantsExtractor(DataExtractor):
@@ -20,10 +28,8 @@ class ConstantsExtractor(DataExtractor):
             'model': 'J',
         })
 
-    def __iter__(self):
-        for (k, v) in self.usecols.items():
-            data = self.df[k].nunique()
-            yield (v, data)
+    def extract(self, values):
+        return values.nunique()
 
 class ValuesExtractor(DataExtractor):
     def __init__(self, df):
@@ -33,15 +39,12 @@ class ValuesExtractor(DataExtractor):
             'correct': 'y',
         })
 
-    def __iter__(self):
-        for i in self.df.columns:
-            key = self.usecols[i]
-            values = (df[i]
-                      .astype(int)
-                      .to_list())
+    def extract(self, values):
+        return values.astype(int).to_list()
 
-            yield (key, values)
-
+#
+#
+#
 if __name__ == '__main__':
     extractors = (
         ConstantsExtractor,
