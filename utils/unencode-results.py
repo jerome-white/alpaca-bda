@@ -40,7 +40,7 @@ if __name__ == '__main__':
     arguments = ArgumentParser()
     arguments.add_argument('--encodings', type=Path)
     arguments.add_argument('--parameter', action='append')
-    arguments.add_argument('--chunk-size', type=int, default=100000)
+    arguments.add_argument('--chunk-size', type=int, default=int(1e5))
     arguments.add_argument('--workers', type=int)
     args = arguments.parse_args()
 
