@@ -24,4 +24,4 @@ python $ROOT/utils/aggregate-output.py --results $_model/output \
 	     --encodings $tmp \
     | gzip --to-stdout --best > $_output
 
-# rm $tmp
+rm $tmp
