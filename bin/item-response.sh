@@ -69,5 +69,5 @@ fi || exit 3
 if [ $_upload ]; then
     python $ROOT/utils/push-to-hub.py \
 	   --source $_output \
-	   --target jerome-white/alpaca-ir-stan
+	   --target jerome-white/alpaca-irt-stan
 fi || exit 4
