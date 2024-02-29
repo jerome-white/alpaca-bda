@@ -14,7 +14,6 @@ def func(incoming, outgoing, args):
         _encodings = json.load(fp)
     _params = dict(x.split(':') for x in args.parameter)
     _parameter = 'parameter'
-    _value = f'{_parameter}_value'
 
     while True:
         rows = incoming.get()
@@ -31,7 +30,7 @@ def func(incoming, outgoing, args):
                     break
             else:
                 value = ''
-            r[_value] = value
+            r['element'] = value
             records.append(r)
 
         outgoing.put(records)
