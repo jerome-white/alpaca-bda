@@ -35,7 +35,7 @@ fi || exit 1
 #
 #
 if [ $_sample ]; then
-    $ROOT/bin/sample.sh -m $SRC -s 12000
+    $ROOT/bin/sample.sh -m $SRC -s 8000
 fi || exit 2
 
 #
