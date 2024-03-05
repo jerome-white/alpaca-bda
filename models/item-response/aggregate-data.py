@@ -7,14 +7,18 @@ import pandas as pd
 
 from mylib import Logger, DataReader
 
-def correctness(model):
-    def assess(x):
-        m = x[model]
-        return (x['preference']
+class Assessor:
+    def __init__(self, model):
+        self.columns = (
+            model,
+            'preference',
+        )
+
+    def __call__(self, x):
+        (m, p) = map(x.get, self.columns)
+        return (p
                 .combine_first(m)
                 .eq(m))
-
-    return assess
 
 #
 #
@@ -28,7 +32,7 @@ def func(incoming, outgoing, args):
     }
     columns = { y: x for (x, y) in items.items() if y is not None }
     kwargs = {
-        correct: correctness(args.target),
+        correct: Assessor(args.target),
     }
 
     while True:
