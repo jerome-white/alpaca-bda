@@ -1,7 +1,5 @@
 import sys
-import csv
 import json
-from pathlib import Path
 
 import pandas as pd
 
@@ -52,7 +50,9 @@ if __name__ == '__main__':
     )
     df = pd.read_csv(sys.stdin)
 
-    data = dict(N=len(df))
+    data = {
+        'N': len(df),
+    }
     for i in extractors:
         e = i(df)
         data.update(e)

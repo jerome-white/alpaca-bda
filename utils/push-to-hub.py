@@ -1,4 +1,3 @@
-import sys
 import csv
 import gzip
 from pathlib import Path
@@ -12,7 +11,7 @@ class DataReader:
         'chain': int,
         'sample': int,
     }
-    
+
     def __init__(self, source):
         self.source = source
 

@@ -5,8 +5,6 @@ from pathlib import Path
 from argparse import ArgumentParser
 from multiprocessing import Pool, Queue
 
-import pandas as pd
-
 from mylib import Logger, DataReader
 
 def func(incoming, outgoing, args):
