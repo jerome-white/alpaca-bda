@@ -1,4 +1,3 @@
-import sys
 import csv
 from pathlib import Path
 from argparse import ArgumentParser
@@ -29,7 +28,7 @@ if __name__ == '__main__':
     arguments.add_argument('--target', type=Path)
     args = arguments.parse_args()
 
-    gen_kwargs={
+    gen_kwargs = {
         'fp': sys.stdin,
     }
     dataset = Dataset.from_generator(reader, gen_kwargs=gen_kwargs)

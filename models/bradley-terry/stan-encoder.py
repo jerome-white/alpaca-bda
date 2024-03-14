@@ -1,5 +1,4 @@
 import sys
-import csv
 import json
 from pathlib import Path
 from argparse import ArgumentParser
