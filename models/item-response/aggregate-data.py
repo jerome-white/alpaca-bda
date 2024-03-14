@@ -11,7 +11,7 @@ def correctness(model):
     def assess(x):
         m = x[model]
         return (x['preference']
-                .combine_first(m)
+                .combine_first(m) # implicitly remove ties
                 .eq(m))
 
     return assess
