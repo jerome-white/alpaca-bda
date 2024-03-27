@@ -13,7 +13,7 @@ while getopts 'b:e:' option; do
     esac
 done
 
-git submodule update --remote --merge
+git submodule update --remote --merge 1>&2
 python $ROOT/utils/compile-results.py ${_baseline[@]} \
        --results $ROOT/alpaca_eval/results \
     | python $ROOT/utils/encode-results.py --save-encodings $_encodings
