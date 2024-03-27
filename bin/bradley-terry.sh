@@ -42,10 +42,15 @@ fi || exit 2
 #
 #
 if [ $_evaluate ]; then
-    $ROOT/bin/evaluate.sh -m $SRC -e $_codes -p alpha:model || exit 3
-fi | \
-    if [ $_upload ]; then
-	python $ROOT/utils/push-to-hub.py --target jerome-white/alpaca-bt-stan
-    else
-	gzip --to-stdout --best > $_output
-    fi
+    $ROOT/bin/evaluate.sh -m $SRC -e $_codes -p alpha:model \
+	| gzip --to-stdout --best > $_output
+fi || exit 3
+
+#
+#
+#
+if [ $_upload ]; then
+    zcat $_output \
+	| python $ROOT/utils/push-to-hub.py \
+		 --target jerome-white/alpaca-bt-stan
+else || exit 4
