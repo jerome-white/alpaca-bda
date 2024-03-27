@@ -59,15 +59,10 @@ if [ $_evaluate ]; then
     $ROOT/bin/evaluate.sh \
 	-m $SRC \
 	-e $_codes \
-	-o $_output \
-	-p ${parameter[@]}
-fi || exit 3
-
-#
-#
-#
-if [ $_upload ]; then
-    python $ROOT/utils/push-to-hub.py \
-	   --source $_output \
-	   --target jerome-white/alpaca-irt-stan
-fi || exit 4
+	-p ${parameter[@]} || exit 3
+fi | \
+    if [ $_upload ]; then
+	python $ROOT/utils/push-to-hub.py --target jerome-white/alpaca-irt-stan
+    else
+	gzip --to-stdout --best > $_output
+    fi
