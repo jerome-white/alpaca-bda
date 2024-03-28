@@ -79,9 +79,6 @@ if __name__ == '__main__':
 
     with Pool(args.workers, func, initargs):
         groups = {
-            'prompt': (
-                'instruction',
-            ),
             'model': (
                 'generator_1',
                 'generator_2',
