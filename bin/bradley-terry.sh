@@ -26,7 +26,7 @@ done
 #
 #
 if [ $_prepare ]; then
-    $ROOT/bin/prepare.sh -e $_codes -b gpt4_1106_preview \
+    $ROOT/bin/prepare.sh -e $_codes \
 	| python $SRC/aggregate-data.py \
 	| python $SRC/stan-encoder.py > $SRC/data.json
 fi || exit 1
