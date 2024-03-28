@@ -18,6 +18,7 @@ done
 tmp=`mktemp`
 
 python $ROOT/utils/aggregate-output.py --results $_model/output \
-    | python $ROOT/utils/unencode-results.py ${_parameters[@]} --encodings $tmp
+    | python $ROOT/utils/unencode-results.py ${_parameters[@]} \
+	     --encodings $_encodings
 
 rm $tmp
