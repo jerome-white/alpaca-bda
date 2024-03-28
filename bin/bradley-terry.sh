@@ -52,5 +52,5 @@ fi || exit 3
 if [ $_upload ]; then
     zcat $_output \
 	| python $ROOT/utils/push-to-hub.py \
-		 --target jerome-white/alpaca-bt-stan
+		 --target jerome-white/arena-bt-stan
 fi || exit 4
