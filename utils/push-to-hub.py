@@ -17,20 +17,20 @@ class TypeConverter:
             yield (k, v(row[k]))
 
 def reader(fp):
-    reader = csv.DictReader(fp)
-    converter = TypeConverter()
+    def load():
+        reader = csv.DictReader(fp)
+        converter = TypeConverter()
 
-    for row in reader:
-        row.update(converter(row))
-        yield row
+        for row in reader:
+            row.update(converter(row))
+            yield row
+
+    return load
 
 if __name__ == '__main__':
     arguments = ArgumentParser()
     arguments.add_argument('--target', type=Path)
     args = arguments.parse_args()
 
-    gen_kwargs = {
-        'fp': sys.stdin,
-    }
-    dataset = Dataset.from_generator(reader, gen_kwargs=gen_kwargs)
+    dataset = Dataset.from_generator(reader(sys.stdin))
     dataset.push_to_hub(str(args.target))
