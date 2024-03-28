@@ -1,10 +1,10 @@
 #!/bin/bash
 
 ROOT=`git rev-parse --show-toplevel`
+ARENA_DATA="https://drive.google.com/file/d/1Kpg6HD1QCrytCVT7FgRvZhY885TnmpEo/view?usp=sharing"
 
-while getopts 'b:e:' option; do
+while getopts 'e:' option; do
     case $option in
-	b) _baseline=( ${_baseline[@]} --baseline $OPTARG ) ;;
 	e) _encodings=$OPTARG ;;
         *)
             echo -e Unrecognized option \"$option\"
