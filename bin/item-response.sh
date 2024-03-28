@@ -70,4 +70,4 @@ if [ $_upload ]; then
     zcat $_output \
 	| python $ROOT/utils/push-to-hub.py \
 		 --target jerome-white/alpaca-irt-stan
-else || exit 4
+fi || exit 4
