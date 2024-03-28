@@ -2,6 +2,7 @@ import sys
 import csv
 from pathlib import Path
 from argparse import ArgumentParser
+from tempfile import TemporaryDirectory
 
 from datasets import Dataset
 
@@ -17,20 +18,24 @@ class TypeConverter:
             yield (k, v(row[k]))
 
 def reader(fp):
-    def load():
-        reader = csv.DictReader(fp)
-        converter = TypeConverter()
+    reader = csv.DictReader(fp)
+    converter = TypeConverter()
 
-        for row in reader:
-            row.update(converter(row))
-            yield row
-
-    return load
+    for row in reader:
+        row.update(converter(row))
+        yield row
 
 if __name__ == '__main__':
     arguments = ArgumentParser()
     arguments.add_argument('--target', type=Path)
     args = arguments.parse_args()
 
-    dataset = Dataset.from_generator(reader(sys.stdin))
-    dataset.push_to_hub(str(args.target))
+    with TemporaryDirectory() as cache_dir:
+        dataset = Dataset.from_generator(
+            reader,
+            cache_dir=cache_dir,
+            gen_kwargs={
+                'fp': sys.stdin,
+            },
+        )
+        dataset.push_to_hub(str(args.target))
