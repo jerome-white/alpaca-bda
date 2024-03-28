@@ -1,89 +1,50 @@
 import sys
 import csv
 import json
-from pathlib import Path
 from argparse import ArgumentParser
-from dataclasses import dataclass, asdict, fields
-from multiprocessing import Pool, Queue
+from tempfile import NamedTemporaryFile
+from urllib.parse import urlparse, urlunparse
 
-from mylib import Logger
+import gdown
 
-class ModelComparisonError(Exception):
-    pass
-
-@dataclass
-class ModelComparison:
-    annotator: str
-    instruction: str
-    dataset: str
-    generator_1: str
-    generator_2: str
-    preference: str
-
-    def __post_init__(self):
-        try:
-            choice = float(self.preference)
-            if choice == 1.5:
-                self.preference = ''
-            else:
-                self.preference = getattr(self, f'generator_{choice:.0f}')
-        except (TypeError, ValueError, AttributeError) as err:
-            raise ModelComparisonError() from err
-
-def func(incoming, outgoing, args):
-    keys = [x.name for x in fields(ModelComparison)]
-    baselines = set(args.baseline or [])
-
-    while True:
-        path = incoming.get()
-        Logger.info(path)
-
-        with path.open() as fp:
+def load(url, anony):
+    with NamedTemporaryFile(mode='w') as output:
+        source = gdown.download(
+            url,
+            output=output.name,
+            quiet=True,
+            fuzzy=True,
+        )
+        with open(source) as fp:
             data = json.load(fp)
 
-        results = []
-        for i in data:
-            try:
-                kwargs = {x: i[x] for x in keys}
-                comparison = ModelComparison(**kwargs)
-            except (KeyError, ModelComparisonError) as err:
-                Logger.error(f'{path}: {err}')
-                continue
+    for i in data:
+        if i['anony'] or anony:
+            yield i
 
-            if baselines and comparison.generator_1 not in baselines:
-                Logger.warning(f'{path}: Baseline not present')
-            else:
-                results.append(asdict(comparison))
+def collect(battles, tie=''):
+    models = {
+        f'model_{x}': f'generator_{y}' for (x, y) in zip(('a', 'b'), (1, 2))
+    }
 
-        outgoing.put(results)
+    for b in battles:
+        row = { y: b[x] for (x, y) in models.items() }
+        row.update({
+            'annotator': b['judge'],
+            'preference':  b.get(b['winner'], tie),
+        })
+
+        yield row
 
 if __name__ == '__main__':
     arguments = ArgumentParser()
-    arguments.add_argument('--baseline', action='append')
-    arguments.add_argument('--results', type=Path)
-    arguments.add_argument('--workers', type=int)
+    arguments.add_argument('--source', type=urlparse)
+    arguments.add_argument('--ignore-anony', action='store_true')
     args = arguments.parse_args()
 
-    incoming = Queue()
-    outgoing = Queue()
-    initargs = (
-        outgoing,
-        incoming,
-        args,
-    )
-
-    with Pool(args.workers, func, initargs):
-        jobs = 0
-        for i in args.results.rglob('annotations.json'):
-            outgoing.put(i)
-            jobs += 1
-
-        writer = None
-        for _ in range(jobs):
-            rows = incoming.get()
-            if rows:
-                if writer is None:
-                    fieldnames = rows[0]
-                    writer = csv.DictWriter(sys.stdout, fieldnames=fieldnames)
-                    writer.writeheader()
-                writer.writerows(rows)
+    writer = None
+    for row in collect(load(urlunparse(args.source), args.ignore_anony)):
+        if writer is None:
+            writer = csv.DictWriter(sys.stdout, fieldnames=row)
+            writer.writeheader()
+        writer.writerow(row)
