@@ -17,7 +17,6 @@ done
 
 tmp=`mktemp`
 
-python $ROOT/utils/pretty-names.py --configs $_configs < $_encodings > $tmp
 python $ROOT/utils/aggregate-output.py --results $_model/output \
     | python $ROOT/utils/unencode-results.py ${_parameters[@]} --encodings $tmp
 
