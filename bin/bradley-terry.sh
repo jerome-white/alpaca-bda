@@ -27,7 +27,7 @@ done
 #
 if [ $_prepare ]; then
     $ROOT/bin/prepare.sh -e $_codes \
-	| python $SRC/aggregate-data.py \
+	| python $SRC/aggregate-data.py --with-ties \
 	| python $SRC/stan-encoder.py > $SRC/data.json
 fi || exit 1
 
