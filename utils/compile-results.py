@@ -1,23 +1,42 @@
 import sys
 import csv
-import json
+from pathlib import Path
+from datetime import datetime, timedelta
 from argparse import ArgumentParser
-from tempfile import NamedTemporaryFile
 from urllib.parse import urlparse, urlunparse
 
-import gdown
+import requests
 
-def load(url, anony):
-    with NamedTemporaryFile(mode='w') as output:
-        source = gdown.download(
-            url,
-            output=output.name,
-            quiet=True,
-            fuzzy=True,
-        )
-        with open(source) as fp:
-            data = json.load(fp)
+from mylib import Logger
 
+def delorean(limit=30):
+    delta = timedelta(days=1)
+    today = datetime.today()
+
+    for _ in range(limit):
+        yield today.strftime('%Y%m%d')
+        today -= delta
+
+def retrieve(url):
+    source = url
+    path = Path(source.path)
+
+    for i in delorean():
+        p = (path
+             .joinpath(f'clean_battle_{i}')
+             .with_suffix('.json'))
+        source = source._replace(path=str(p))
+        target = urlunparse(source)
+        response = requests.get(target)
+        if not response.ok:
+            Logger.error(f'{target}: {response.status_code}')
+            continue
+
+        return response.json()
+
+    raise FileNotFoundError(urlunparse(url))
+
+def load(data, anony):
     for i in data:
         if i['anony'] or anony:
             yield i
@@ -42,8 +61,10 @@ if __name__ == '__main__':
     arguments.add_argument('--ignore-anony', action='store_true')
     args = arguments.parse_args()
 
+    reader = collect(load(retrieve(args.source), args.ignore_anony))
     writer = None
-    for row in collect(load(urlunparse(args.source), args.ignore_anony)):
+
+    for row in reader:
         if writer is None:
             writer = csv.DictWriter(sys.stdout, fieldnames=row)
             writer.writeheader()

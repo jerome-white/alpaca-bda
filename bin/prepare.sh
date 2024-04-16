@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ROOT=`git rev-parse --show-toplevel`
-ARENA_DATA="https://drive.google.com/file/d/1Kpg6HD1QCrytCVT7FgRvZhY885TnmpEo/view?usp=sharing"
+ARENA_DATA="https://storage.googleapis.com/arena_external_data/public"
 
 while getopts 'e:' option; do
     case $option in
