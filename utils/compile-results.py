@@ -28,11 +28,11 @@ def retrieve(url):
         source = source._replace(path=str(p))
         target = urlunparse(source)
         response = requests.get(target)
-        if not response.ok:
-            Logger.error(f'{target}: {response.status_code}')
-            continue
+        if response.ok:
+            Logger.info(target)
+            return response.json()
 
-        return response.json()
+        Logger.error(f'{target}: {response.status_code}')
 
     raise FileNotFoundError(urlunparse(url))
 
