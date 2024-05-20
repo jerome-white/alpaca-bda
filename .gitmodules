@@ -1,3 +1,3 @@
 [submodule "alpaca_eval"]
-	path = alpaca_eval
+	path = frameworks/alpaca/alpaca_eval
 	url = https://github.com/tatsu-lab/alpaca_eval
