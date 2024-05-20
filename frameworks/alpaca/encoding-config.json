@@ -1,0 +1,10 @@
+{
+  "prompt": [
+    "instruction"
+  ],
+  "model": [
+    "generator_1",
+    "generator_2",
+    "preference"
+  ]
+}
