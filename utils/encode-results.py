@@ -65,6 +65,7 @@ def func(incoming, outgoing, args):
 if __name__ == '__main__':
     arguments = ArgumentParser()
     arguments.add_argument('--save-encodings', type=Path)
+    arguments.add_argument('--config', type=Path)
     arguments.add_argument('--start', type=int, default=1)
     arguments.add_argument('--workers', type=int)
     args = arguments.parse_args()
@@ -78,16 +79,7 @@ if __name__ == '__main__':
     )
 
     with Pool(args.workers, func, initargs):
-        groups = {
-            'prompt': (
-                'instruction',
-            ),
-            'model': (
-                'generator_1',
-                'generator_2',
-                'preference',
-            ),
-        }
+        groups = json.loads(args.config.read_text())
         df = pd.read_csv(sys.stdin)
 
         for (k, v) in groups.items():
