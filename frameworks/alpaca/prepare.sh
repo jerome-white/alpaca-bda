@@ -3,7 +3,9 @@
 ROOT=`git rev-parse --show-toplevel`
 
 _baselines=(
-    gpt4_1106_preview
+    # text_davinci_003
+    # gpt4_turbo # GPT cited in Alpaca documentation
+    gpt4_1106_preview # GPT found in the data
 )
 
 while getopts 'e:' option; do
