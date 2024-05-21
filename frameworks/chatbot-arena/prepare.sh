@@ -13,5 +13,5 @@ while getopts 'e:' option; do
     esac
 done
 
-python $ROOT/utils/compile-results.py ${_baseline[@]} --source $ARENA_DATA \
+python $ROOT/utils/compile-results.py --source $ARENA_DATA \
     | python $ROOT/utils/encode-results.py --save-encodings $_encodings
