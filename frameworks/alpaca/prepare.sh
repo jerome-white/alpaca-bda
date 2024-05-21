@@ -23,4 +23,6 @@ baseline=`sed -e's/ / --baseline /g' <<< ${_baselines[@]}`
 git submodule update --remote --merge 1>&2
 python $ROOT/utils/compile-results.py --baseline $baseline \
        --results $ROOT/frameworks/alpaca/alpaca_eval/results \
-    | python $ROOT/utils/encode-results.py --save-encodings $_encodings
+    | python $ROOT/utils/encode-results.py \
+	     --config `dirname $0`/encoding-config.json \
+	     --save-encodings $_encodings

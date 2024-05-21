@@ -14,4 +14,6 @@ while getopts 'e:' option; do
 done
 
 python $ROOT/utils/compile-results.py --source $ARENA_DATA \
-    | python $ROOT/utils/encode-results.py --save-encodings $_encodings
+    | python $ROOT/utils/encode-results.py \
+	     --config `dirname $0`/encoding-config.json \
+	     --save-encodings $_encodings
