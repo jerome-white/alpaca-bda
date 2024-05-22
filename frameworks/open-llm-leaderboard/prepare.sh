@@ -12,7 +12,9 @@ while getopts 'e:' option; do
             ;;
     esac
 done
-python $ROOT/frameworks/open-llm-leaderboard/compile-results.py --bucket $S3_BUCKET
-exit
-python $ROOT/utils/compile-results.py --bucket $S3_BUCKET \
-    | python $ROOT/utils/encode-results.py --save-encodings $_encodings
+
+python $ROOT/frameworks/open-llm-leaderboard/compile-results.py \
+       --data-root /media/hdd \
+    | python $ROOT/utils/encode-results.py \
+	     --save-encodings $_encodings \
+	     --config `dirname $0`/encoding-config.json \
