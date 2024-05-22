@@ -1,19 +1,16 @@
 #!/bin/bash
 
 ROOT=`git rev-parse --show-toplevel`
-SRC=$ROOT/models/bradley-terry
 
 export PYTHONPATH=$ROOT
 export PYTHONLOGLEVEL=info
 
-_codes=$SRC/codes.json
-_output=$SRC/results.csv.gz
-
+_model=$ROOT/models/bradley-terry
 while getopts 'f:pseuh' option; do
     case $option in
 	f)
 	    _fm=$OPTARG
-	    case $OPTARG in
+	    case `basename $_ftype` in
 		alpaca) ;;
 		chatbot-arena)
 		    _dataset=arena
@@ -34,39 +31,42 @@ while getopts 'f:pseuh' option; do
     esac
 done
 
-if [ ! -d $ROOT/frameworks/$_fm ]; then
+if [ ! -d $_fm ]; then
     exit 1
 fi
+
+codes=$_fm/codes.json
+output=$_fm/results.csv.gz
 
 #
 #
 #
 if [ $_prepare ]; then
-    $ROOT/frameworks/$_fm/prepare.sh -e $_codes \
-	| python $SRC/aggregate-data.py \
-	| python $SRC/stan-encoder.py > $SRC/data.json
+    $_fm/prepare.sh -e $codes \
+	| python $_model/aggregate-data.py \
+	| python $_model/stan-encoder.py > $_model/data.json
 fi || exit 1
 
 #
 #
 #
 if [ $_sample ]; then
-    $ROOT/bin/sample.sh -m $SRC -s 8000
+    $ROOT/bin/sample.sh -m $_model -s 8000
 fi || exit 2
 
 #
 #
 #
 if [ $_evaluate ]; then
-    $ROOT/frameworks/$_fm/evaluate.sh -m $SRC -e $_codes -p alpha:model \
-	| gzip --to-stdout --best > $_output
+    $_fm/evaluate.sh -m $_model -e $codes -p alpha:model \
+	| gzip --to-stdout --best > $output
 fi || exit 3
 
 #
 #
 #
 if [ $_upload ]; then
-    zcat $_output \
+    zcat $output \
 	| python $ROOT/utils/push-to-hub.py \
 		 --target jerome-white/${_dataset}-bt-stan
 fi || exit 4
