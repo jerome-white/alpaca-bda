@@ -15,5 +15,5 @@ done
 
 python $ROOT/utils/compile-results.py --source $ARENA_DATA \
     | python $ROOT/utils/encode-results.py \
-	     --config `dirname $0`/encoding-config.json \
-	     --save-encodings $_encodings
+	     --save-encodings $_encodings \
+	     --config `dirname $0`/encoding-config.json
